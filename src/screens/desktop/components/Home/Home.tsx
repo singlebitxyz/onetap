@@ -28,10 +28,17 @@ export default function Home({ className }: { className: string }) {
 
   async function checkUserExists(authId: string) {
     try {
-      const response = await overwolfHttpRequest(
-        `http://localhost:3000/user/basic-info/${authId}`,
-        "GET"
-      );
+      // const response = await overwolfHttpRequest(
+      //   `${process.env.REACT_APP_LOCAL_URL}`,
+      //   "GET",
+      //   {
+      //     externalUrl: `${process.env.REACT_APP_BACKEND_URL}/user/basic-info/${authId}`,
+      //   }
+      // );
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/user/basic-info/${authId}`,
+        { method: "GET" }
+      ).then((res) => res.json());
       return response;
     } catch (error) {
       console.error("Failed to check if user exists:", error);
@@ -41,16 +48,28 @@ export default function Home({ className }: { className: string }) {
 
   async function fetchUserIdFromDb(authId: string) {
     try {
-      const response = await overwolfHttpRequest(
-        `http://localhost:3000/user/profile-data/${authId}`,
-        "POST",
+      // const response = await overwolfHttpRequest(
+      //   `${process.env.REACT_APP_LOCAL_URL}`,
+      //   "POST",
+      //   {
+      //     data: {
+      //       Auth: authId,
+      //       userName: `user ${authId}`,
+      //     },
+      //     externalUrl: `${process.env.REACT_APP_BACKEND_URL}/user/profile-data/${authId}`,
+      //   }
+      // );
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/user/profile-data/${authId}`,
         {
-          data: {
+          method: "POST",
+          body: JSON.stringify({
             Auth: authId,
             userName: `user ${authId}`,
-          },
+          }),
+          headers: { "Content-Type": "application/json" },
         }
-      );
+      ).then((res) => res.json());
       if (response) {
         await dispatch(setUserId(response.id));
         return response.id;
@@ -89,10 +108,10 @@ export default function Home({ className }: { className: string }) {
       }
     }
 
-    if (!userInfo.Auth) {
-      fetchAndSetUserInfo();
-    }
-  }, []);
+    // if (!userInfo.Auth) {
+    fetchAndSetUserInfo();
+    // }
+  }, [userInfo.Auth, userId, userInfo]);
 
   return (
     <div className={`${className}`}>

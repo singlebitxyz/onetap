@@ -131,10 +131,17 @@ export default function Inventory({ className }: InventoryProps) {
   useEffect(() => {
     async function getData() {
       try {
-        const data = await overwolfHttpRequest(
-          `http://localhost:3000/inventory/get-all-user-info/${userId}`,
-          "GET"
-        );
+        // const data = await overwolfHttpRequest(
+        //   `${process.env.REACT_APP_LOCAL_URL}`,
+        //   "GET",
+        //   {
+        //     externalUrl: `${process.env.REACT_APP_BACKEND_URL}/inventory/get-all-user-info/${userId}`,
+        //   }
+        // );
+        const data = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/inventory/get-all-user-info/${userId}`,
+          { method: "GET" }
+        ).then((res) => res.json());
         setData(data);
       } catch (error) {
         console.error("Error fetching user info:", error);

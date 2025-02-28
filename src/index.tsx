@@ -11,7 +11,6 @@ import reportWebVitals from "./reportWebVitals";
 const container = document.getElementById("root");
 const root = createRoot(container!);
 
-
 const OverwolfApp = () => (
   <Provider store={store}>
     <App />

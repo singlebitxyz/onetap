@@ -12,7 +12,11 @@ async function overwolfHttpRequest(
       headers,
       JSON.stringify(data),
       (result) => {
-        console.log("Raw result from overwolf.web.sendHttpRequest:", result);
+        console.log(
+          "Raw result from overwolf.web.sendHttpRequest:",
+          url,
+          result
+        );
         if (result.statusCode === 200) {
           try {
             const parsedData = JSON.parse(result.data as string);

@@ -27,16 +27,22 @@ export const ChallengesLeft = () => {
 
   useEffect(() => {
     // Use a proper URL and handle potential errors
-    overwolfHttpRequest(
-      `http://localhost:3000/challenges/ongoing-challenges/${gameId}/`,
-      "GET"
-    )
-      .then((res: any) => {
-        // setChallenges(aggregateRequirements(res));
-      })
-      .catch((error: any) => {
-        console.error("Failed to fetch challenges:", error);
-      });
+    // overwolfHttpRequest(`${process.env.REACT_APP_LOCAL_URL}`, "GET", {
+    //   externalUrl: `${process.env.REACT_APP_BACKEND_URL}/challenges/ongoing-challenges/${gameId}/`,
+    // })
+    //   .then((res: any) => {
+    //     // setChallenges(aggregateRequirements(res));
+    //   })
+    //   .catch((error: any) => {
+    //     console.error("Failed to fetch challenges:", error);
+    //   });
+
+    fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/challenges/ongoing-challenges/${gameId}/`,
+      { method: "GET" }
+    ).catch((error) => {
+      console.error("Failed to fetch challenges:", error);
+    });
   }, [gameId]);
 
   return (

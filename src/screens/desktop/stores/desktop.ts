@@ -37,10 +37,17 @@ export const fetchLeaderboardData = createAsyncThunk<
   { rejectValue: string } // Optional, if you want to handle rejected cases with a specific type
 >("desktopScreen/fetchLeaderboardData", async (gameId, { rejectWithValue }) => {
   try {
-    const data = await overwolfHttpRequest(
-      `https://localhost:3000/leaderboard/game-specific/${gameId}`,
-      "GET"
-    );
+    // const data = await overwolfHttpRequest(
+    //   `${process.env.REACT_APP_LOCAL_URL}`,
+    //   "GET",
+    //   {
+    //     externalUrl: `${process.env.REACT_APP_BACKEND_URL}/leaderboard/game-specific/${gameId}`,
+    //   }
+    // );
+    const data = await fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/leaderboard/game-specific/${gameId}`,
+      { method: "GET" }
+    ).then((res) => res.json());
 
     return data as Array<LeaderboardDataPayload>;
   } catch (error) {

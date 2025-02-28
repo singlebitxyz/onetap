@@ -17,10 +17,17 @@ export const ChallengeCompletedCard = ({
   useEffect(() => {
     const fetchData = async (challengeId: string) => {
       try {
-        const jsonData = await overwolfHttpRequest(
-          `http://localhost:3000/challenges/completed-challenges/${gameId}/${userId}`,
-          "GET"
-        );
+        // const jsonData = await overwolfHttpRequest(
+        //   `${process.env.REACT_APP_LOCAL_URL}`,
+        //   "GET",
+        //   {
+        //     externalUrl: `${process.env.REACT_APP_BACKEND_URL}/challenges/completed-challenges/${gameId}/${userId}`,
+        //   }
+        // );
+        const jsonData = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/challenges/completed-challenges/${gameId}/${userId}`,
+          { method: "GET" }
+        ).then((res) => res.json());
 
         console.log(jsonData);
         setChallenge(jsonData);
@@ -76,10 +83,17 @@ export default function ChallengesCompleted({
     const fetchData = async (gameId: string) => {
       try {
         console.log(`gameId ${gameId} ${userId}`);
-        const jsonData = await overwolfHttpRequest(
-          `http://localhost:3000/challenges/completed-challenges/${gameId}/${userId}`,
-          "GET"
-        );
+        // const jsonData = await overwolfHttpRequest(
+        //   `${process.env.REACT_APP_LOCAL_URL}`,
+        //   "GET",
+        //   {
+        //     externalUrl: `${process.env.REACT_APP_BACKEND_URL}/challenges/completed-challenges/${gameId}/${userId}`,
+        //   }
+        // );
+        const jsonData = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/challenges/completed-challenges/${gameId}/${userId}`,
+          { method: "GET" }
+        ).then((res) => res.json());
 
         console.log(jsonData);
         setChallenges(jsonData);

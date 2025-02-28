@@ -99,11 +99,22 @@ export const MyProfile = memo(({ authId }: { authId: string }) => {
   }) => {
     try {
       console.log("called update user profile", values, authId);
-      const response = await overwolfHttpRequest(
-        `http://localhost:3000/user/profile-data/${authId}`,
-        "POST",
-        { data: values }
-      );
+      // const response = await overwolfHttpRequest(
+      //   `${process.env.REACT_APP_LOCAL_URL}`,
+      //   "POST",
+      //   {
+      //     data: values,
+      //     externalUrl: `${process.env.REACT_APP_BACKEND_URL}/user/profile-data/${authId}`,
+      //   }
+      // );
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/user/profile-data/${authId}`,
+        {
+          method: "POST",
+          body: JSON.stringify(values),
+          headers: { "Content-Type": "application/json" },
+        }
+      ).then((res) => res.json());
 
       if (response.statusCode !== 200) {
         throw new Error(

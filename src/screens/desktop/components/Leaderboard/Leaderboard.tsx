@@ -113,11 +113,17 @@ export default function Leaderboard({ className }: { className: string }) {
         // dispatch(fetchLeaderboardData(gameId));
         console.log(gameId);
         try {
-          const jsonData = await overwolfHttpRequest(
-            `http://localhost:3000/leaderboard/game-specific/${gameId}`,
-            "GET"
-          );
-
+          // const jsonData = await overwolfHttpRequest(
+          //   `${process.env.REACT_APP_LOCAL_URL}`,
+          //   "GET",
+          //   {
+          //     externalUrl: `${process.env.REACT_APP_BACKEND_URL}/leaderboard/game-specific/${gameId}`,
+          //   }
+          // );
+          const jsonData = await fetch(
+            `${process.env.REACT_APP_BACKEND_URL}/leaderboard/game-specific/${gameId}`,
+            { method: "GET" }
+          ).then((res) => res.json());
           setGameData(jsonData);
           console.log(jsonData);
         } catch (error) {
