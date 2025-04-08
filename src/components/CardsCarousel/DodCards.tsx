@@ -1,12 +1,23 @@
-import DodCard from "./DodCard"
-
+import DodCard from "./DodCard";
+import { useSelector } from "react-redux";
+import { CouponsCount } from "types";
+import { gameMapper } from "utils/gameMapper";
 
 export default function DodCards() {
+  const { couponsCount } = useSelector(
+    (state: { background: { couponsCount: CouponsCount[] } }) =>
+      state.background
+  );
+
   return (
-    <div className='flex overflow-x-scroll ml-2 mr-20 gap-4'>
-      {Array.from({ length: 12 }, (_, i) => (
-        <DodCard key={i} game_name="Pubg" discount={10} offers_count={10} />
+    <div className="flex overflow-x-auto ml-2 mr-2 gap-4">
+      {couponsCount.map((coupon, i) => (
+        <DodCard
+          key={i}
+          game={gameMapper(coupon.game_id)}
+          numberOfCoupons={coupon.count}
+        />
       ))}
     </div>
-  )
+  );
 }

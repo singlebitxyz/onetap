@@ -10,7 +10,7 @@ import Filter from "../Filter";
 import GameCard from "../Challenges/components/GameCard";
 import { useFormik } from "formik";
 import Button from "components/Button/Button";
-import { overwolfHttpRequest } from "utils/overwolfHttpRequest";
+import { logOut } from "lib/auth.utils";
 
 const UserProfile = ({ className }: { className: string }) => {
   const [displayPage, setDisplayPage] = useState(false);
@@ -49,17 +49,17 @@ const UserProfile = ({ className }: { className: string }) => {
             <MyProfile authId={userInfo.Auth} />
           )}
         </div>
-        <Filter
+        {/* <Filter
           className={`${!displayPage ? "col-start-3" : "col-start-3 hidden"}`}
         >
-          <GameCard id={"1"} img_src="pubg" className="w-36" />
-          <GameCard id={"2"} img_src="dota2" className="w-36" />
-          <GameCard id={"3"} img_src="apex_legends" className="w-36" />
-          <GameCard id={"4"} img_src="cod_warzone" className="w-36" />
-          <GameCard id={"5"} img_src="cs_go" className="w-36" />
-          <GameCard id={"6"} img_src="fortnite" className="w-36" />
-          <GameCard id={"7"} img_src="hearthstone" className="w-36" />
-        </Filter>
+          <GameCard id={"1"} img_src="dota2" className="w-36" />
+          <GameCard id={"2"} img_src="valorant" className="w-36" />
+          <GameCard id={"3"} img_src="cod_warzone" className="w-36" />
+          <GameCard id={"4"} img_src="pubg" className="w-36" />
+          <GameCard id={"5"} img_src="fallguys" className="w-36" />
+          <GameCard id={"6"} img_src="fortnite" className="w-36" /> */}
+        {/* <GameCard id={"7"} img_src="hearthstone" className="w-36"/> */}
+        {/* </Filter> */}
       </>
     </div>
   );
@@ -78,9 +78,17 @@ export const MyRanking = memo(({ authId }: { authId: string }) => {
       </div>
       <div>
         <div className="flex gap-5 p-2 flex-row">
-          <LbBox imgSrc="image 73.svg" num={1} textSrc="Rank" />
-          <LbBox imgSrc="image 72.svg" num={6} textSrc="Level" />
-          <LbBox imgSrc="image 72-1.svg" num={2000} textSrc="Coins" />
+          <LbBox
+            imgSrc="image 73.svg"
+            num={userInfo.globalRanking}
+            textSrc="Rank"
+          />
+          <LbBox imgSrc="image 72.svg" num={userInfo.level} textSrc="Level" />
+          <LbBox
+            imgSrc="image 72-1.svg"
+            num={userInfo.balance}
+            textSrc="Coins"
+          />
         </div>
       </div>
     </div>
@@ -99,14 +107,6 @@ export const MyProfile = memo(({ authId }: { authId: string }) => {
   }) => {
     try {
       console.log("called update user profile", values, authId);
-      // const response = await overwolfHttpRequest(
-      //   `${process.env.REACT_APP_LOCAL_URL}`,
-      //   "POST",
-      //   {
-      //     data: values,
-      //     externalUrl: `${process.env.REACT_APP_BACKEND_URL}/user/profile-data/${authId}`,
-      //   }
-      // );
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/user/profile-data/${authId}`,
         {
@@ -231,7 +231,7 @@ export const MyProfile = memo(({ authId }: { authId: string }) => {
           />
         </div>
 
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label
             htmlFor="userId"
             className="block text-white text-xl font-display"
@@ -247,7 +247,7 @@ export const MyProfile = memo(({ authId }: { authId: string }) => {
             className="bg-transparent border-[1px] bg-[#302F2F] rounded border-[#BE9FFF] w-full text-white mb-3 p-2 leading-tight focus:outline-none"
             autoComplete="off"
           />
-        </div>
+        </div> */}
 
         {/* <div className="mb-6">
           <label
@@ -266,10 +266,20 @@ export const MyProfile = memo(({ authId }: { authId: string }) => {
             autoComplete="off"
           />
         </div> */}
-        <button type="submit" disabled={formik.isSubmitting}>
+        <button
+          className="focus:outline-none flex p-2 text-center bg-[#383838] text-[#C6C6C6] font-Poppins mt-2"
+          type="submit"
+          disabled={formik.isSubmitting}
+        >
           {formik.isSubmitting ? "Updating..." : "Confirm changes"}
         </button>
       </form>
+      <button
+        className="focus:outline-none rounded flex p-2 text-center bg-[#3b2323] text-[#C6C6C6] font-Poppins mt-2"
+        onClick={logOut}
+      >
+        Logout
+      </button>
     </div>
   );
 });

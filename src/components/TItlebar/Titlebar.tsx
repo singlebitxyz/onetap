@@ -36,16 +36,40 @@ export const Titlebar = ({ WINDOW_NAME, className }: HeaderProps) => {
 
   const toggleIcon = useCallback(() => {
     if (!currentWindow) return;
-    if (!maximized) currentWindow.maximize();
-    else currentWindow.restore();
-    setMaximize(!maximized);
-  }, [currentWindow, maximized]);
+    if (!maximized) {
+      currentWindow.maximize();
+      setMaximize(true);
+    } else {
+      currentWindow.restore();
+      setMaximize(false);
+    }
+  }, [currentWindow, maximized, WINDOW_NAME]);
 
   const updateDragWindow = useCallback(() => {
     if (currentWindow?.id) setCurrentWindowID(currentWindow.id);
   }, [currentWindow, setCurrentWindowID]);
 
-  useEffect(updateDragWindow, [updateDragWindow]);
+  // Check window state on mount and when window changes
+  useEffect(() => {
+    if (currentWindow) {
+      // Always maximize by default for desktop window
+      if (WINDOW_NAME === "desktop") {
+        currentWindow.maximize();
+        setMaximize(true);
+      } else {
+        // For other windows, check their state
+        overwolf.windows.getWindowState(currentWindow.id, (result) => {
+          if (result && result.window_state === "maximized") {
+            setMaximize(true);
+          }
+        });
+      }
+    }
+  }, [currentWindow, WINDOW_NAME]);
+
+  useEffect(() => {
+    updateDragWindow();
+  }, [updateDragWindow, WINDOW_NAME]);
 
   return (
     <header

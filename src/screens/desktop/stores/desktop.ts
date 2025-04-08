@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { overwolfHttpRequest } from "utils/overwolfHttpRequest";
 
 type OnboardedPayload = PayloadAction<boolean>;
 type InventoryOpenPayload = PayloadAction<number>;
@@ -37,13 +36,6 @@ export const fetchLeaderboardData = createAsyncThunk<
   { rejectValue: string } // Optional, if you want to handle rejected cases with a specific type
 >("desktopScreen/fetchLeaderboardData", async (gameId, { rejectWithValue }) => {
   try {
-    // const data = await overwolfHttpRequest(
-    //   `${process.env.REACT_APP_LOCAL_URL}`,
-    //   "GET",
-    //   {
-    //     externalUrl: `${process.env.REACT_APP_BACKEND_URL}/leaderboard/game-specific/${gameId}`,
-    //   }
-    // );
     const data = await fetch(
       `${process.env.REACT_APP_BACKEND_URL}/leaderboard/game-specific/${gameId}`,
       { method: "GET" }

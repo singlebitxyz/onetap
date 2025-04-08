@@ -12,29 +12,55 @@ import {
   setUserId,
   setAuth,
   setUserInfo,
+  setChallenges,
+  setCouponsCount,
 } from "screens/background/stores/background";
-import { overwolfHttpRequest } from "utils/overwolfHttpRequest";
+import ChallengeCards from "components/CardsCarousel/ChallengeCards";
 
 export default function Home({ className }: { className: string }) {
   useDesktopHooks();
   const { userId, userInfo } = useSelector((state: any) => state.background);
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch<any>();
+
   useEffect(() => {
     console.log("UserProfile - AuthId:", userInfo.Auth);
     console.log("UserProfile - UserId:", userId);
     console.log("UserProfile - UserInfo:", userInfo);
   }, [userInfo.Auth, userId, userInfo]);
 
+  useEffect(() => {
+    async function fetchAndSetChallenges() {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/challenges/all-ongoing-challenges`
+        );
+        const data = await response.json();
+        console.log(data);
+        dispatch(setChallenges(data));
+      } catch (error) {
+        console.error("Failed to fetch challenges:", error);
+      }
+    }
+
+    async function fetchAndSetCouponsCount() {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/marketplace/coupon-count-by-game`
+        );
+        const data = await response.json();
+        dispatch(setCouponsCount(data));
+      } catch (error) {
+        console.error("Failed to fetch coupons count:", error);
+      }
+    }
+
+    fetchAndSetChallenges();
+    fetchAndSetCouponsCount();
+  }, [dispatch]);
+
   async function checkUserExists(authId: string) {
     try {
-      // const response = await overwolfHttpRequest(
-      //   `${process.env.REACT_APP_LOCAL_URL}`,
-      //   "GET",
-      //   {
-      //     externalUrl: `${process.env.REACT_APP_BACKEND_URL}/user/basic-info/${authId}`,
-      //   }
-      // );
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/user/basic-info/${authId}`,
         { method: "GET" }
@@ -48,17 +74,6 @@ export default function Home({ className }: { className: string }) {
 
   async function fetchUserIdFromDb(authId: string) {
     try {
-      // const response = await overwolfHttpRequest(
-      //   `${process.env.REACT_APP_LOCAL_URL}`,
-      //   "POST",
-      //   {
-      //     data: {
-      //       Auth: authId,
-      //       userName: `user ${authId}`,
-      //     },
-      //     externalUrl: `${process.env.REACT_APP_BACKEND_URL}/user/profile-data/${authId}`,
-      //   }
-      // );
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/user/profile-data/${authId}`,
         {
@@ -111,23 +126,23 @@ export default function Home({ className }: { className: string }) {
     // if (!userInfo.Auth) {
     fetchAndSetUserInfo();
     // }
-  }, [userInfo.Auth, userId, userInfo]);
+  }, [dispatch, userInfo.Auth]);
 
   return (
     <div className={`${className}`}>
       <GamesBanner />
-      <Carousel title="Popular Games">
-        <PopCards />
+      <Carousel title="Top challenges">
+        <ChallengeCards />
       </Carousel>
-      <Carousel>
+      <Carousel title="Top Games">
         <DodCards />
       </Carousel>
       <Banner className="ml-2 mr-20" imgSrc="pubg">
         <CODBanner />
       </Banner>
-      <Carousel>
+      {/* <Carousel>
         <DodCards />
-      </Carousel>
+      </Carousel> */}
     </div>
   );
 }

@@ -48,30 +48,20 @@ const signupValidationSchema = Yup.object().shape({
 
 const handleSubmit = async (
   values: formValues,
-  isSignup: SetStateAction<boolean>,
-  desktop: any,
-  login: any
+  isSignup: SetStateAction<boolean>
 ) => {
-  let error;
   if (isSignup) {
-    error = await signUp(values.email, values.password);
+    const error = await signUp(values.email, values.password);
+    if (error) ConsoleAuthError(error);
   } else {
-    error = await loginEP(values.email, values.password);
-  }
-  if (error) ConsoleAuthError(error);
-  else {
-    desktop.restore();
-    login.minimize()();
+    const error = await loginEP(values.email, values.password);
+    if (error) ConsoleAuthError(error);
+    // Window management is now handled by useSupLogin
   }
 };
 
 const AuthForm = () => {
   const [isSignup, setIsSignup] = useState(false);
-  const [desktop] = useWindow(
-    WINDOW_NAMES.DESKTOP,
-    DISPLAY_OVERWOLF_HOOKS_LOGS
-  );
-  const [login] = useWindow(WINDOW_NAMES.LOGIN, DISPLAY_OVERWOLF_HOOKS_LOGS);
   const discordLogin = UseloginProvider("discord");
   const googleLogin = UseloginProvider("google");
   const switchMode = () => {
@@ -86,9 +76,7 @@ const AuthForm = () => {
       }
       onSubmit={(values, { setSubmitting }) => {
         setSubmitting(true);
-        handleSubmit(values, isSignup, desktop, login).finally(() =>
-          setSubmitting(false)
-        );
+        handleSubmit(values, isSignup).finally(() => setSubmitting(false));
       }}
     >
       {({ values }) => (
@@ -167,7 +155,7 @@ const AuthForm = () => {
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-white">
-              {isSignup ? "Already have an account?" : "Don’t have an account?"}
+              {isSignup ? "Already have an account?" : "Don't have an account?"}
             </span>
             <button
               type="button"

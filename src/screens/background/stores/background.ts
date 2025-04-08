@@ -1,7 +1,13 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BackgroundState, EventPayload, InfoPayload, UserInfo } from "types";
-import { gameDataHandlers, gameDataUpdaters } from "./helperFunctions";
-import { overwolfHttpRequest } from "utils/overwolfHttpRequest";
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  BackgroundState,
+  EventPayload,
+  ChallengeData,
+  CouponsCount,
+  CouponData,
+  StreakInfo,
+} from "types";
+import { gameDataUpdaters } from "./helperFunctions";
 import { Timestamp, OwInfo } from "types";
 
 // TODO:
@@ -47,39 +53,54 @@ const initialState: BackgroundState = {
     premiumUser: false,
   },
   flag: false,
+  challenges: [] as ChallengeData[],
+  couponsCount: [
+    {
+      game_id: 0,
+      count: 0,
+    },
+  ],
+  coupons: [] as CouponData[],
+  dailyRewards: {
+    lastRewardCollected: null as string | null,
+    currentStreak: 0,
+    rewards: [
+      { day: 1, amount: 10, claimed: false },
+      { day: 2, amount: 10, claimed: false },
+      { day: 3, amount: 10, claimed: false },
+      { day: 4, amount: 10, claimed: false },
+      { day: 5, amount: 10, claimed: false },
+    ],
+  },
 };
 
-// export const setUserId = createAsyncThunk<
-//   number,
-//   string,
-//   { state: BackgroundState; rejectValue: string }
-// >("backgroundScreen/setUserId", async (authId, { rejectWithValue }) => {
-//   try {
-//     const response = await fetch(`http://localhost:3000/user/${authId}`);
-//     if (!response.ok) throw new Error("Network response was not ok");
-//     const { userId } = await response.json();
-//     return userId;
-//   } catch (error) {
-//     return rejectWithValue("Failed to fetch user id");
-//   }
-// });
-
-// export const setUserInfo = createAsyncThunk<
-//   UserInfo,
-//   string,
-//   { state: BackgroundState; rejectValue: string }
-// >("backgroundScreen/setUserInfo", async (userId, { rejectWithValue }) => {
-//   try {
-//     const response = await overwolfHttpRequest(
-//       `http://localhost:3000/user/basic-info/${userId}`,
-//       "GET"
+// export const fetchChallenges = createAsyncThunk(
+//   "background/fetchChallenges",
+//   async () => {
+//     const response = await fetch(
+//       `${process.env.REACT_APP_BACKEND_URL}/challenges/getAllChallenges`
 //     );
-//     if (!response.ok) throw new Error("Network response was not ok");
-//     return await response.json();
-//   } catch (error) {
-//     return rejectWithValue("Failed to fetch user info");
+//     const data = await response.json();
+//     return data as ChallengeData[];
 //   }
-// });
+// );
+
+export const fetchLastRewardTimestamp = createAsyncThunk(
+  "background/fetchLastRewardTimestamp",
+  async (userId: number) => {
+    const response = await fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/user/last-reward/${userId}`
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch last reward timestamp");
+    }
+    const data = await response.json();
+    return {
+      lastRewardCollected: data.last_reward_collected as string | null,
+      currentStreak: data.current_streak as number,
+    };
+  }
+);
 
 const backgroundSlice = createSlice({
   name: "backgroundScreen",
@@ -97,14 +118,16 @@ const backgroundSlice = createSlice({
             state.gameData[state.gameId].match_status = "true";
             break;
           case "match_end":
-            state.gameData[state.gameId].match_end = new Date().toISOString();
-            state.gameData[state.gameId].match_status = "false";
-            console.log("match has ended");
-            gameDataUpdaters(
-              state.userId,
-              state.gameId,
-              state.gameData[state.gameId]
-            );
+            if (state.gameData[state.gameId].match_status === "true") {
+              state.gameData[state.gameId].match_end = new Date().toISOString();
+              state.gameData[state.gameId].match_status = "false";
+              console.log("match has ended");
+              gameDataUpdaters(
+                state.userId,
+                state.gameId,
+                state.gameData[state.gameId]
+              );
+            }
             break;
           // Add more cases for other event types
         }
@@ -180,16 +203,194 @@ const backgroundSlice = createSlice({
     setAuth(state, action: PayloadAction<string>) {
       state.userInfo.Auth = action.payload;
     },
+    setChallenges(state, action: PayloadAction<ChallengeData[]>) {
+      state.challenges = action.payload;
+    },
+    setCouponsCount(state, action: PayloadAction<CouponsCount[]>) {
+      state.couponsCount = action.payload;
+    },
+    setCoupons(state, action: PayloadAction<CouponData[]>) {
+      console.log("Setting coupons in Redux store:", action.payload);
+
+      // Process and validate coupon data before setting
+      const validCoupons = action.payload.filter((coupon) => {
+        // Skip coupons with null item_id
+        if (!coupon || coupon.item_id === null) {
+          console.log("Skipping coupon with null item_id in Redux:", coupon);
+          return false;
+        }
+
+        // Parse extraDetails if it's a string
+        if (typeof coupon.extraDetails === "string") {
+          try {
+            coupon.extraDetails = JSON.parse(coupon.extraDetails);
+            console.log("Parsed extraDetails in Redux:", coupon.extraDetails);
+          } catch (e) {
+            console.error("Failed to parse extraDetails in Redux:", e);
+            return false;
+          }
+        }
+
+        // Check if the coupon has all required properties
+        const isValid =
+          typeof coupon.item_id !== "undefined" &&
+          coupon.item_id !== null &&
+          typeof coupon.extraDetails !== "undefined" &&
+          coupon.extraDetails !== null;
+
+        if (!isValid) {
+          console.error("Invalid coupon data in Redux:", coupon);
+        }
+
+        return isValid;
+      });
+
+      console.log(
+        `Setting ${validCoupons.length} valid coupons in Redux store`
+      );
+      state.coupons = validCoupons;
+    },
+    setDailyRewards(
+      state,
+      action: PayloadAction<{
+        lastRewardCollected: string | null;
+        currentStreak: number;
+      }>
+    ) {
+      state.dailyRewards.lastRewardCollected =
+        action.payload.lastRewardCollected;
+      state.dailyRewards.currentStreak = action.payload.currentStreak;
+
+      // Update claimed status for rewards based on current streak
+      if (action.payload.currentStreak > 0) {
+        state.dailyRewards.rewards.forEach((reward) => {
+          reward.claimed = reward.day <= action.payload.currentStreak;
+        });
+      }
+    },
+    claimDailyReward(
+      state,
+      action: PayloadAction<{ day: number; currentStreak: number }>
+    ) {
+      const { day, currentStreak } = action.payload;
+      console.log("🎯 claimDailyReward - Incoming payload:", {
+        day,
+        currentStreak,
+      });
+      console.log("🎯 Current state before claim:", {
+        lastRewardCollected: state.dailyRewards.lastRewardCollected,
+        currentStreak: state.dailyRewards.currentStreak,
+        rewards: state.dailyRewards.rewards,
+      });
+
+      const reward = state.dailyRewards.rewards.find((r) => r.day === day);
+      if (reward && !reward.claimed) {
+        reward.claimed = true;
+        state.dailyRewards.lastRewardCollected = new Date().toISOString();
+        state.dailyRewards.currentStreak = currentStreak;
+        state.userInfo.balance += reward.amount;
+
+        console.log("🎯 State after claiming reward:", {
+          lastRewardCollected: state.dailyRewards.lastRewardCollected,
+          currentStreak: state.dailyRewards.currentStreak,
+          rewards: state.dailyRewards.rewards,
+        });
+      }
+    },
+    redeemCoupon(
+      state,
+      action: PayloadAction<{
+        itemId: number;
+        points: number;
+        instanceId?: number;
+      }>
+    ) {
+      const { itemId, points, instanceId } = action.payload;
+      console.log("Redeeming coupon in Redux store:", {
+        itemId,
+        points,
+        instanceId,
+      });
+
+      // Find the coupon and update its available instances
+      const couponIndex = state.coupons.findIndex((c) => c.item_id === itemId);
+      if (couponIndex !== -1) {
+        const coupon = state.coupons[couponIndex];
+        console.log("Found coupon to redeem:", coupon);
+
+        // Create a new coupon object with updated values
+        const updatedCoupon = {
+          ...coupon,
+          available_instances: Math.max(0, coupon.available_instances - 1),
+          marketplace_ids: instanceId
+            ? coupon.marketplace_ids.filter((id) => id !== instanceId)
+            : coupon.marketplace_ids,
+        };
+
+        // Update the coupon in the state
+        state.coupons[couponIndex] = updatedCoupon;
+
+        console.log("Updated coupon state:", updatedCoupon);
+      } else {
+        console.error("Could not find coupon with itemId:", itemId);
+      }
+
+      // Update user's balance, ensuring it doesn't go below 0
+      const newBalance = Math.max(0, state.userInfo.balance - points);
+      console.log(
+        "Updating user balance:",
+        state.userInfo.balance,
+        "->",
+        newBalance
+      );
+      state.userInfo.balance = newBalance;
+
+      // Update the coupon count for the game
+      const gameId = state.coupons.find((c) => c.item_id === itemId)?.gameId;
+      if (gameId) {
+        const countIndex = state.couponsCount.findIndex(
+          (c) => c.game_id === gameId
+        );
+        if (countIndex !== -1) {
+          state.couponsCount[countIndex] = {
+            ...state.couponsCount[countIndex],
+            count: Math.max(0, state.couponsCount[countIndex].count - 1),
+          };
+        }
+      }
+    },
   },
-  // extraReducers: (builder) => {
-  //   builder
-  //     .addCase(setUserInfo.fulfilled, (state, action) => {
-  //       state.userInfo = action.payload;
-  //     })
-  //     .addCase(setUserInfo.rejected, () => {
-  //       console.error("Failed to fetch basic info data!");
-  //     });
-  // },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchLastRewardTimestamp.pending, (state) => {
+        // You could add loading state here if needed
+      })
+      .addCase(fetchLastRewardTimestamp.fulfilled, (state, action) => {
+        state.dailyRewards.lastRewardCollected =
+          action.payload.lastRewardCollected;
+        state.dailyRewards.currentStreak = action.payload.currentStreak;
+
+        // Update claimed status for all rewards based on lastRewardCollected
+        if (action.payload.lastRewardCollected) {
+          const lastRewardDate = new Date(action.payload.lastRewardCollected);
+          const today = new Date();
+
+          // Update claimed status based on current streak
+          state.dailyRewards.rewards.forEach((reward) => {
+            reward.claimed = reward.day <= state.dailyRewards.currentStreak;
+          });
+        } else {
+          // First time user - no rewards claimed yet
+          state.dailyRewards.currentStreak = 0;
+          state.dailyRewards.rewards.forEach((reward) => {
+            reward.claimed = false;
+          });
+        }
+      })
+      .addCase(fetchLastRewardTimestamp.rejected, (state, action) => {
+        console.error("Failed to fetch last reward timestamp:", action.error);
+      });
+  },
 });
 
 export const {
@@ -200,6 +401,12 @@ export const {
   setUserId,
   setUserInfo,
   setAuth,
+  setChallenges,
+  setCouponsCount,
+  setCoupons,
+  setDailyRewards,
+  claimDailyReward,
+  redeemCoupon,
 } = backgroundSlice.actions;
 
 export default backgroundSlice.reducer;

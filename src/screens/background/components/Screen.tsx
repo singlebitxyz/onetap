@@ -72,7 +72,7 @@ const BackgroundWindow = () => {
           }
         } else {
           try {
-            await Promise.all([stop(), desktop?.restore()]);
+            await Promise.all([stop(), desktop?.maximize()]);
             // log("Stopped game event provider and restored desktop window.");
           } catch (error) {
             // log(`Error stopping game mode: ${error}`, "error");

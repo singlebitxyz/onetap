@@ -15,9 +15,24 @@ export const useDesktopHooks = () => {
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
       if (!session) {
-        console.log(login);
-        login.restore();
-        desktop.minimize();
+        console.log("No session, redirecting to login");
+
+        // Ensure window functions are available before calling them
+        if (login && typeof login.restore === "function") {
+          try {
+            login.restore()();
+          } catch (error) {
+            console.error("Error restoring login window:", error);
+          }
+        }
+
+        if (desktop && typeof desktop.minimize === "function") {
+          try {
+            desktop.minimize()();
+          } catch (error) {
+            console.error("Error minimizing desktop window:", error);
+          }
+        }
       }
     });
   }, [login, desktop]);

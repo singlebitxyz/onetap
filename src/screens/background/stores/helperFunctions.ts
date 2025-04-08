@@ -2,7 +2,6 @@ import { BackgroundState, EventPayload } from "types";
 import { setRecentlyCompletedChallenges } from "./background";
 import { extractCompletedChallenges } from "utils";
 import { HEARTHSTONE_CLASS_ID, VALORANT_CLASS_ID } from "lib/games";
-import { overwolfHttpRequest } from "utils/overwolfHttpRequest";
 import store from "app/shared/store";
 import { log } from "lib/log";
 interface GameDataHandlers {
@@ -29,14 +28,6 @@ export const gameDataUpdaters = async (
     JSON.stringify({ userId, gameId, gameData })
   );
   try {
-    // const response = await overwolfHttpRequest(
-    //   `${process.env.REACT_APP_LOCAL_URL}`,
-    //   "POST",
-    //   {
-    //     data: { gameData: { ...gameData }, userId: userId, gameId: gameId },
-    //     externalUrl: `${process.env.REACT_APP_BACKEND_URL}/challenges/update-completed-challenges`,
-    //   }
-    // );
     const response = await fetch(
       `${process.env.REACT_APP_BACKEND_URL}/challenges/update-completed-challenges`,
       {
