@@ -376,7 +376,7 @@ function CouponCard({
   };
 
   return (
-    <div className="rounded bg-[#222222] w-fit">
+    <div className="rounded bg-[#222222] w-fit h-[40vh] flex flex-col justify-between">
       <div className="flex">
         <div className="p-2">
           <img className="" src={`/images/${gameMapper(gameId)}.png`} alt="" />

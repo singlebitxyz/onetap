@@ -39,7 +39,6 @@ export type CouponData = {
   itemName: string;
   itemType: string;
   itemValue: any;
-  itemImage: string | null;
   gameId: number;
   extraDetails:
     | string

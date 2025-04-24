@@ -32,43 +32,49 @@ export default function Screen() {
                 <Route
                   path="/"
                   element={
-                    <Home className="grow mt-10 col-start-2 col-span-4" />
+                    <Home className="grow col-start-2 col-span-4 mt-2" />
                   }
                 />
                 <Route
                   path="/onboard"
-                  element={<UserForm className="grow col-start-2 col-span-4" />}
+                  element={
+                    <UserForm className="grow col-start-2 col-span-4 mt-2" />
+                  }
                 />
                 <Route
                   path="/challenges"
                   element={
-                    <Challenges className="grow col-start-2 col-span-4" />
+                    <Challenges className="grow col-start-2 col-span-4 mt-2" />
                   }
                 />
                 <Route
                   path="/leaderboard"
                   element={
-                    <Leaderboard className="grow col-start-2 col-span-4" />
+                    <Leaderboard className="grow col-start-2 col-span-4 mt-2" />
                   }
                 />
                 <Route
                   path="/inventory"
-                  element={<Page className="grow col-start-2 col-span-4" />}
+                  element={
+                    <Page className="grow col-start-2 col-span-4 mt-2" />
+                  }
                 />
                 <Route
                   path="/marketplace"
                   element={
-                    <Marketplace className="grow col-start-2 col-span-4" />
+                    <Marketplace className="grow col-start-2 col-span-4 mt-2" />
                   }
                 />
                 <Route
                   path="/overview"
-                  element={<Overview className="grow col-start-2 col-span-4" />}
+                  element={
+                    <Overview className="grow col-start-2 col-span-4 mt-2" />
+                  }
                 />
                 <Route
                   path="/userProfile"
                   element={
-                    <UserProfile className="grow col-start-2 col-span-4" />
+                    <UserProfile className="grow col-start-2 col-span-4 mt-2" />
                   }
                 />
                 <Route

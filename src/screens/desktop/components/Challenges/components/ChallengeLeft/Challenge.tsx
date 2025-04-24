@@ -35,6 +35,7 @@ interface ChallengeProps {
     userId: string;
   };
   isStarted: boolean;
+  requirementText?: string;
 }
 
 // Default values for comparison
@@ -103,6 +104,7 @@ export default function Challenge({
   name,
   requirement,
   isStarted,
+  requirementText,
 }: ChallengeProps) {
   // Ensure we have valid values for rendering
   const validTotal = total || 0;
@@ -131,9 +133,7 @@ export default function Challenge({
             </span>
           </div>
         </div>
-        <p className="font-Poppins text-sm text-[#C6C6C6]">
-          {formatRequirement(requirement)}
-        </p>
+        <p className="font-Poppins text-sm text-[#C6C6C6]">{requirementText}</p>
       </div>
     </li>
   );

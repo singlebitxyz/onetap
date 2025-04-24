@@ -1,7 +1,7 @@
 .header {
   display: flex;
   top: 0;
-  height: 5vh;
+  height: 4vh;
   background-color: var(--background-color);
 }
 

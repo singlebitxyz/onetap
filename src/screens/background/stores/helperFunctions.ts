@@ -113,14 +113,18 @@ export const gameDataHandlers: GameDataHandlers = {
     const gameData = { ...state.gameData[state.gameId] };
     action.payload.events.forEach((event) => {
       switch (event.name) {
-        // case "match_start":
-        //     gameData.match_start = new Date(action.payload.timestamp).toISOString().replace('Z', '');
-        //     console.log("Match start updated:", gameData.match_start);
-        //     break;
-        // case "match_end":
-        //     gameData.match_end = new Date(action.payload.timestamp).toISOString().replace('Z', '');
-        //     console.log("Match end updated:", gameData.match_end);
-        //     break;
+        case "match_start":
+          gameData.match_start = new Date(action.payload.timestamp)
+            .toISOString()
+            .replace("Z", "");
+          console.log("Match start updated:", gameData.match_start);
+          break;
+        case "match_end":
+          gameData.match_end = new Date(action.payload.timestamp)
+            .toISOString()
+            .replace("Z", "");
+          console.log("Match end updated:", gameData.match_end);
+          break;
         case "kill":
           const data = JSON.parse(event.data);
 
@@ -157,14 +161,18 @@ export const gameDataHandlers: GameDataHandlers = {
     const gameData = { ...state.gameData[state.gameId] };
     action.payload.events.forEach((event) => {
       switch (event.name) {
-        // case "match_start":
-        //     gameData.match_start = new Date(action.payload.timestamp).toISOString().replace('Z', '');
-        //     console.log("Match start updated:", gameData.match_start);
-        //     break;
-        // case "match_end":
-        //     gameData.match_end = new Date(action.payload.timestamp).toISOString().replace('Z', '');
-        //     console.log("Match end updated:", gameData.match_end);
-        //     break;
+        case "match_start":
+          gameData.match_start = new Date(action.payload.timestamp)
+            .toISOString()
+            .replace("Z", "");
+          console.log("Match start updated:", gameData.match_start);
+          break;
+        case "match_end":
+          gameData.match_end = new Date(action.payload.timestamp)
+            .toISOString()
+            .replace("Z", "");
+          console.log("Match end updated:", gameData.match_end);
+          break;
         case "kill":
           const data = JSON.parse(event.data);
 

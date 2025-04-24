@@ -57,11 +57,11 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           />
         )}
 
-        <h2 className="text-xl font-bold font-Impact">
+        <h2 className="text-xl font-bold font-Impact tracking-wider">
           {tier.toUpperCase()} PLAN
         </h2>
         <p
-          className={`text-lg font-bold ${
+          className={`text-lg font-bold tracking-wider ${
             isPremium ? "text-yellow-200" : "text-purple-400"
           }`}
         >
@@ -90,7 +90,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         </ul>
         {isPremium && (
           <div className="flex items-center justify-center mt-8">
-            <button className="bg-gradient-to-b font-Ranchers from-[#AB8E55] to-[#AE780F] text-white font-bold w-60 py-2 hover:bg-gradient-to-b hover:from-[#AB8E55] hover:to-[#AE780F]">
+            <button className="bg-gradient-to-b font-Ranchers tracking-widest from-[#AB8E55] to-[#AE780F] text-white font-bold w-60 py-2 hover:bg-gradient-to-b hover:from-[#AB8E55] hover:to-[#AE780F]">
               Upgrade To Premium
             </button>
           </div>

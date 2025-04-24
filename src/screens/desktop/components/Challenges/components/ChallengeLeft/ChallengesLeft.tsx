@@ -377,48 +377,46 @@ export const ChallengesLeft = () => {
     console.log("progress 💪", progress);
 
     if (progress) {
-      // Find the challenge to get the requirements
       const challenge = challenges.find((c) => c.id === challengeId);
       if (!challenge) {
-        return { ...progress, total: 2, completed: 0 }; // fallback
+        return { ...progress, total: 2, completed: 0 };
       }
 
-      // Extract the correct values from the progress data
-      const progressRequirements = progress.requirement || {
-        total_kills: 0,
-        headshot: 0,
-        spikes_planted: 0,
-        spikes_defuse: 0,
-        damage_done: 0,
-        team_scores: 0,
-      };
-
+      const progressRequirements = progress.requirement || {};
       const challengeRequirements = challenge.requirements;
       let total = 0;
       let completed = 0;
 
-      // Determine which requirement to use based on the challenge requirements
-      if (challengeRequirements.total_kills > 0) {
-        total = challengeRequirements.total_kills;
-        completed = Math.min(total, progressRequirements.total_kills);
-      } else if (challengeRequirements.headshot > 0) {
-        total = challengeRequirements.headshot;
-        completed = Math.min(total, progressRequirements.headshot);
-      } else if (challengeRequirements.spikes_planted > 0) {
-        total = challengeRequirements.spikes_planted;
-        completed = Math.min(total, progressRequirements.spikes_planted);
-      } else if (challengeRequirements.spikes_defuse > 0) {
-        total = challengeRequirements.spikes_defuse;
-        completed = Math.min(total, progressRequirements.spikes_defuse);
-      } else if (challengeRequirements.damage_done > 0) {
-        total = challengeRequirements.damage_done;
-        completed = Math.min(total, progressRequirements.damage_done);
-      } else if (challengeRequirements.team_scores > 0) {
-        total = challengeRequirements.team_scores;
-        completed = Math.min(total, progressRequirements.team_scores);
+      // Check all possible requirement fields
+      const fieldsToCheck = [
+        "total_kills",
+        "kills",
+        "headshot",
+        "spikes_planted",
+        "spikes_defuse",
+        "damage_done",
+        "team_scores",
+        "total_shots",
+        "physical_damage_dealt_players",
+        "creep_score",
+        "health",
+        "shield",
+        "revived",
+        "knockout",
+        "damage_taken",
+      ];
+
+      for (const field of fieldsToCheck) {
+        if ((challengeRequirements as any)[field] > 0) {
+          total = (challengeRequirements as any)[field];
+          completed = Math.min(
+            total,
+            (progressRequirements as any)[field] || 0
+          );
+          break;
+        }
       }
 
-      // Use the progress object's original values as fallback
       if (total === 0) {
         total = progress.total || 2;
         completed = progress.completed || 0;
@@ -427,31 +425,71 @@ export const ChallengesLeft = () => {
       return { ...progress, total, completed };
     }
 
-    // If progress is not found, find the challenge and set total based on requirements
     const challenge = challenges.find((c) => c.id === challengeId);
     if (challenge) {
-      // Determine the total based on the challenge requirements
       let total = 0;
       const requirements = challenge.requirements;
 
-      // Check which requirement is set and use that as the total
-      if (requirements.total_kills > 0) total = requirements.total_kills;
-      else if (requirements.headshot > 0) total = requirements.headshot;
-      else if (requirements.spikes_planted > 0)
-        total = requirements.spikes_planted;
-      else if (requirements.spikes_defuse > 0)
-        total = requirements.spikes_defuse;
-      else if (requirements.damage_done > 0) total = requirements.damage_done;
-      else if (requirements.team_scores > 0) total = requirements.team_scores;
+      const fieldsToCheck = [
+        "total_kills",
+        "kills",
+        "headshot",
+        "spikes_planted",
+        "spikes_defuse",
+        "damage_done",
+        "team_scores",
+        "total_shots",
+        "physical_damage_dealt_players",
+        "creep_score",
+        "health",
+        "shield",
+        "revived",
+        "knockout",
+        "damage_taken",
+      ];
 
-      // If no valid total was found, default to 2 (seems to be the standard in the UI)
+      for (const field of fieldsToCheck) {
+        if ((requirements as any)[field] > 0) {
+          total = (requirements as any)[field];
+          break;
+        }
+      }
+
       if (total === 0) total = 2;
 
       return { challengeId, completed: 0, total, isStarted: false };
     }
 
-    // Default fallback
-    return { challengeId, completed: 0, total: 2, isStarted: false };
+    return { challengeId, completed: 0, total: 1, isStarted: false };
+  };
+
+  const getChallengeRequirementText = (requirements: any) => {
+    const fieldsToCheck = [
+      { key: "total_kills", label: "kills" },
+      { key: "kills", label: "kills" },
+      { key: "deaths", label: "deaths" },
+      { key: "assists", label: "assists" },
+      { key: "headshot", label: "headshots" },
+      { key: "spikes_planted", label: "spikes planted" },
+      { key: "spikes_defuse", label: "spikes defused" },
+      { key: "damage_done", label: "damage" },
+      { key: "team_scores", label: "team scores" },
+      { key: "total_shots", label: "shots" },
+      { key: "physical_damage_dealt_players", label: "physical damage" },
+      { key: "creep_score", label: "creep score" },
+      { key: "health", label: "health" },
+      { key: "shield", label: "shield" },
+      { key: "revived", label: "revives" },
+      { key: "knockout", label: "knockouts" },
+      { key: "damage_taken", label: "damage taken" },
+    ];
+
+    for (const field of fieldsToCheck) {
+      if (requirements[field.key] > 0) {
+        return `${requirements[field.key]} ${field.label}`;
+      }
+    }
+    return "";
   };
 
   return (
@@ -490,10 +528,13 @@ export const ChallengesLeft = () => {
       <div className="bg-[#242424] p-5">
         <h1 className="font-Impact py-2">Challenges</h1>
         <div className="flex flex-col">
-          <ul className="flex flex-col gap-5">
+          <ul className="flex flex-col gap-5 h-[25vh] overflow-y-auto">
             {filteredChallenges &&
               filteredChallenges.map((challenge: ChallengeData, key: any) => {
                 const progress = getChallengeProgress(challenge.id);
+                const requirementText = getChallengeRequirementText(
+                  challenge.requirements
+                );
                 return (
                   <Challenge
                     total={progress.total}
@@ -501,6 +542,7 @@ export const ChallengesLeft = () => {
                     name={challenge.name}
                     requirement={challenge.requirements}
                     isStarted={progress.isStarted}
+                    requirementText={requirementText}
                     key={key}
                   />
                 );
