@@ -7,6 +7,7 @@ import {
   GameTransactions,
 } from "../components/Inventory/types";
 import { gameMapper } from "utils/gameMapper";
+import fetchApi from "utils/api";
 
 const getGameName = (gameId: number): string => {
   const gameName = gameMapper(gameId);
@@ -41,13 +42,10 @@ export const fetchCoinsSummary = async (
   userId: string
 ): Promise<TransactionHistory> => {
   try {
-    const response = await fetch(
+    const response = await fetchApi(
       `${process.env.REACT_APP_BACKEND_URL}/user/coins-summary`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ userId }),
       }
     );

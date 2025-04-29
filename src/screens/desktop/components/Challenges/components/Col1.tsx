@@ -11,6 +11,7 @@ import { RootReducer } from "app/shared/rootReducer";
 import { fetchLastRewardTimestamp } from "screens/background/stores/background";
 import { AppDispatch } from "app/shared/store";
 import { gameMapper } from "utils/gameMapper";
+import fetchApi from "utils/api";
 
 const DEFAULT_VALUES = {
   agent: "",
@@ -63,7 +64,7 @@ export default function Col1() {
   useEffect(() => {
     const fetchFirstChallenge = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchApi(
           `${process.env.REACT_APP_BACKEND_URL}/challenges/all-ongoing-challenges`
         );
         const challenges = await response.json();

@@ -11,6 +11,7 @@ import GameCard from "../Challenges/components/GameCard";
 import { useFormik } from "formik";
 import Button from "components/Button/Button";
 import { logOut } from "lib/auth.utils";
+import fetchApi from "utils/api";
 
 const UserProfile = ({ className }: { className: string }) => {
   const [displayPage, setDisplayPage] = useState(false);
@@ -107,23 +108,20 @@ export const MyProfile = memo(({ authId }: { authId: string }) => {
   }) => {
     try {
       console.log("called update user profile", values, authId);
-      const response = await fetch(
+      const response = await fetchApi(
         `${process.env.REACT_APP_BACKEND_URL}/user/profile-data/${authId}`,
         {
           method: "POST",
           body: JSON.stringify(values),
-          headers: { "Content-Type": "application/json" },
         }
-      ).then((res) => res.json());
+      );
 
-      if (response.statusCode !== 200) {
-        throw new Error(
-          `HTTP error! status: ${response.statusCode}, ${response}`
-        );
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Update successful:", data);
+      } else {
+        throw new Error(`HTTP error! status: ${response.status}, ${data}`);
       }
-
-      const result = response.json();
-      console.log("Update successful:", result);
     } catch (error) {
       console.error("Error updating user profile:", error);
     }

@@ -4,6 +4,7 @@ import { useFilterContext } from "../Contexts/FilterContext";
 import { useSelector } from "react-redux";
 import { gameMapper } from "utils/gameMapper";
 import { CompletedChallengeData } from "types";
+import fetchApi from "utils/api";
 
 export const ChallengeCompletedCard = ({
   className,
@@ -100,11 +101,10 @@ export default function ChallengesCompleted({
     const fetchData = async () => {
       try {
         console.log(` ${userId}`);
-        let jsonData;
-        jsonData = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/challenges/all-completed-challenges/${userId}`,
-          { method: "GET" }
-        ).then((res) => res.json());
+        const response = await fetchApi(
+          `${process.env.REACT_APP_BACKEND_URL}/challenges/all-completed-challenges/${userId}`
+        );
+        const jsonData = await response.json();
         console.log(jsonData);
         setChallenges(jsonData);
         setFilteredChallenges(jsonData);

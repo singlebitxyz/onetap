@@ -16,6 +16,7 @@ import {
   setCouponsCount,
 } from "screens/background/stores/background";
 import ChallengeCards from "components/CardsCarousel/ChallengeCards";
+import fetchApi from "utils/api";
 
 export default function Home({ className }: { className: string }) {
   useDesktopHooks();
@@ -32,7 +33,7 @@ export default function Home({ className }: { className: string }) {
   useEffect(() => {
     async function fetchAndSetChallenges() {
       try {
-        const response = await fetch(
+        const response = await fetchApi(
           `${process.env.REACT_APP_BACKEND_URL}/challenges/all-ongoing-challenges`
         );
         const data = await response.json();
@@ -45,7 +46,7 @@ export default function Home({ className }: { className: string }) {
 
     async function fetchAndSetCouponsCount() {
       try {
-        const response = await fetch(
+        const response = await fetchApi(
           `${process.env.REACT_APP_BACKEND_URL}/marketplace/coupon-count-by-game`
         );
         const data = await response.json();
@@ -61,11 +62,11 @@ export default function Home({ className }: { className: string }) {
 
   async function checkUserExists(authId: string) {
     try {
-      const response = await fetch(
+      const response = await fetchApi(
         `${process.env.REACT_APP_BACKEND_URL}/user/basic-info/${authId}`,
         { method: "GET" }
-      ).then((res) => res.json());
-      return response;
+      );
+      return response.json();
     } catch (error) {
       console.error("Failed to check if user exists:", error);
       return null;
@@ -74,7 +75,7 @@ export default function Home({ className }: { className: string }) {
 
   async function fetchUserIdFromDb(authId: string) {
     try {
-      const response = await fetch(
+      const response = await fetchApi(
         `${process.env.REACT_APP_BACKEND_URL}/user/profile-data/${authId}`,
         {
           method: "POST",
@@ -82,12 +83,12 @@ export default function Home({ className }: { className: string }) {
             Auth: authId,
             userName: `user ${authId}`,
           }),
-          headers: { "Content-Type": "application/json" },
         }
-      ).then((res) => res.json());
-      if (response) {
-        await dispatch(setUserId(response.id));
-        return response.id;
+      );
+      const data = await response.json();
+      if (data) {
+        await dispatch(setUserId(data.id));
+        return data.id;
       }
     } catch (error) {
       console.error("Failed to fetch user ID:", error);

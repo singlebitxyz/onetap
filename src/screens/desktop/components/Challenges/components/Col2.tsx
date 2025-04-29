@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import LevelCard from "./ChallengeLeft/LevelCard";
-import { useFilterContext } from "../../Contexts/FilterContext";
+import { useFilterContext } from "screens/desktop/components/Contexts/FilterContext";
 import { useSelector } from "react-redux";
+import fetchApi from "utils/api";
 
 interface LevelData {
   totalReward: number;
@@ -26,7 +27,7 @@ export default function Col2() {
   useEffect(() => {
     const fetchGroupedChallenges = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchApi(
           `${process.env.REACT_APP_BACKEND_URL}/challenges/grouped-by-level`
         );
         const data = await response.json();

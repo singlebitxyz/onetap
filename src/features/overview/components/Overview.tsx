@@ -4,7 +4,7 @@ import "./styles/Overview.css";
 import { useSelector } from "react-redux";
 import { RootReducer } from "app/shared/rootReducer";
 import { useEffect } from "react";
-// import { overwolfHttpRequest } from "utils/overwolfHttpRequest";
+import fetchApi from "utils/api";
 
 export const Overview = ({ className }: { className: string }) => {
   const { userId, gameId } = useSelector((state: any) => state.background);
@@ -17,16 +17,7 @@ export const Overview = ({ className }: { className: string }) => {
   useEffect(() => {
     if (flag) {
       console.log(`${flag} hey flag is working`);
-      // Using the fetch API to send the data
-      // overwolfHttpRequest(`${process.env.REACT_APP_LOCAL_URL}`, "POST", {
-      //   data: {
-      //     userId: userId,
-      //     gameId: gameId,
-      //     gameData: gameData,
-      //   },
-      //   externalUrl: `${process.env.REACT_APP_BACKEND_URL}/challenges/update-completed-challenges`,
-      // })
-      fetch(
+      fetchApi(
         `${process.env.REACT_APP_BACKEND_URL}/challenges/update-completed-challenges`,
         {
           method: "POST",
@@ -35,7 +26,6 @@ export const Overview = ({ className }: { className: string }) => {
             gameId: gameId,
             gameData: gameData,
           }),
-          headers: { "Content-Type": "application/json" },
         }
       )
         .then((data) => {

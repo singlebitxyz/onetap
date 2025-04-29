@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import fetchApi from "utils/api";
 import {
   BackgroundState,
   EventPayload,
@@ -88,7 +89,7 @@ const initialState: BackgroundState = {
 export const fetchLastRewardTimestamp = createAsyncThunk(
   "background/fetchLastRewardTimestamp",
   async (userId: number) => {
-    const response = await fetch(
+    const response = await fetchApi(
       `${process.env.REACT_APP_BACKEND_URL}/user/last-reward/${userId}`
     );
     if (!response.ok) {
@@ -96,8 +97,8 @@ export const fetchLastRewardTimestamp = createAsyncThunk(
     }
     const data = await response.json();
     return {
-      lastRewardCollected: data.last_reward_collected as string | null,
-      currentStreak: data.current_streak as number,
+      lastRewardCollected: data.lastRewardTimestamp,
+      currentStreak: data.currentStreak,
     };
   }
 );

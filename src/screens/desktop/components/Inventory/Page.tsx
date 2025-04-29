@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { gameMapper } from "utils/gameMapper";
+import fetchApi from "utils/api";
 
 interface InventoryItem {
   id: string;
@@ -32,13 +33,10 @@ export const Page = ({ className }: PageProps) => {
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchApi(
           `${process.env.REACT_APP_BACKEND_URL}/inventory/user-inventory`,
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
             body: JSON.stringify({
               userId,
             }),

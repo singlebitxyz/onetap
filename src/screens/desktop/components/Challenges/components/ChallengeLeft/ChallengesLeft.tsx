@@ -5,6 +5,7 @@ import Progress from "./Progress";
 import { useFilterContext } from "screens/desktop/components/Contexts/FilterContext";
 import { useSelector, useDispatch } from "react-redux";
 import { setUserInfo } from "screens/background/stores/background";
+import fetchApi from "utils/api";
 
 interface ChallengeData {
   id: number;
@@ -173,7 +174,7 @@ export const ChallengesLeft = () => {
 
   const updateUserCoins = async () => {
     try {
-      const response = await fetch(
+      const response = await fetchApi(
         `${process.env.REACT_APP_BACKEND_URL}/user/basic-info/${userInfo.Auth}`,
         { method: "GET" }
       );
@@ -191,13 +192,10 @@ export const ChallengesLeft = () => {
     gameId: number
   ) => {
     try {
-      const response = await fetch(
+      const response = await fetchApi(
         `${process.env.REACT_APP_BACKEND_URL}/challenges/multiple-challenge-progress`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
             userId,
             challengeIds,
@@ -280,17 +278,15 @@ export const ChallengesLeft = () => {
       }
 
       // Fetch ongoing challenges
-      const ongoingData = await fetch(ongoingUrl, { method: "GET" }).then(
-        (res) => res.json()
-      );
+      const ongoingResponse = await fetchApi(ongoingUrl);
+      const ongoingData = await ongoingResponse.json();
       setChallenges(ongoingData);
       setFilteredChallenges(ongoingData);
       setCountProgress((prev) => ({ ...prev, ongoing: ongoingData.length }));
 
       // Fetch completed challenges
-      const completedData = await fetch(completedUrl, { method: "GET" }).then(
-        (res) => res.json()
-      );
+      const completedResponse = await fetchApi(completedUrl);
+      const completedData = await completedResponse.json();
 
       // Count how many completed challenges are from ongoing challenges
       const completedOutOfOngoing = completedData.filter((completed: any) =>
@@ -343,7 +339,7 @@ export const ChallengesLeft = () => {
   useEffect(() => {
     const fetchLevelRewards = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchApi(
           `${process.env.REACT_APP_BACKEND_URL}/challenges/grouped-by-level`
         );
         const data = await response.json();

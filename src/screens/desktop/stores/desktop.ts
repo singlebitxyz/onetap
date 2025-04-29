@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import fetchApi from "utils/api";
 
 type OnboardedPayload = PayloadAction<boolean>;
 type InventoryOpenPayload = PayloadAction<number>;
@@ -36,11 +37,10 @@ export const fetchLeaderboardData = createAsyncThunk<
   { rejectValue: string } // Optional, if you want to handle rejected cases with a specific type
 >("desktopScreen/fetchLeaderboardData", async (gameId, { rejectWithValue }) => {
   try {
-    const data = await fetch(
-      `${process.env.REACT_APP_BACKEND_URL}/leaderboard/game-specific/${gameId}`,
-      { method: "GET" }
-    ).then((res) => res.json());
-
+    const response = await fetchApi(
+      `${process.env.REACT_APP_BACKEND_URL}/leaderboard/game-specific/${gameId}`
+    );
+    const data = await response.json();
     return data as Array<LeaderboardDataPayload>;
   } catch (error) {
     return rejectWithValue("Failed to fetch leaderboard data");

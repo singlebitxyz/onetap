@@ -10,6 +10,7 @@ import {
 } from "screens/background/stores/background";
 import { gameMapper } from "utils/gameMapper"; // Import gameMapper
 import { CouponData, CouponRedemptionResponse } from "types";
+import fetchApi from "utils/api"; // Import fetchApi utility
 
 // Add a SuccessNotification component
 const SuccessNotification = ({
@@ -209,7 +210,7 @@ const PromotionCard = ({
 
   const updateUserCoins = async () => {
     try {
-      const response = await fetch(
+      const response = await fetchApi(
         `${process.env.REACT_APP_BACKEND_URL}/user/basic-info/${userInfo.Auth}`,
         { method: "GET" }
       );
@@ -239,13 +240,10 @@ const PromotionCard = ({
     setError(null);
 
     try {
-      const response = await fetch(
+      const response = await fetchApi(
         `${process.env.REACT_APP_BACKEND_URL}/marketplace/redeem-coupons`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
             itemId,
             userId: userInfo.id,
@@ -423,7 +421,7 @@ export default function Marketplace({ className }: { className: string }) {
     async function fetchAndSetCoupons() {
       try {
         console.log("Fetching coupons from backend...");
-        const response = await fetch(
+        const response = await fetchApi(
           `${process.env.REACT_APP_BACKEND_URL}/marketplace/get-coupons`
         );
         const data = await response.json();

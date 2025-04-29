@@ -4,6 +4,8 @@ import { extractCompletedChallenges } from "utils";
 import { HEARTHSTONE_CLASS_ID, VALORANT_CLASS_ID } from "lib/games";
 import store from "app/shared/store";
 import { log } from "lib/log";
+import fetchApi from "utils/api";
+
 interface GameDataHandlers {
   [key: number]: (
     state: BackgroundState,
@@ -28,7 +30,7 @@ export const gameDataUpdaters = async (
     JSON.stringify({ userId, gameId, gameData })
   );
   try {
-    const response = await fetch(
+    const response = await fetchApi(
       `${process.env.REACT_APP_BACKEND_URL}/challenges/update-completed-challenges`,
       {
         method: "POST",
@@ -37,15 +39,12 @@ export const gameDataUpdaters = async (
           userId: userId,
           gameId: gameId,
         }),
-        headers: { "Content-Type": "application/json" },
       }
-    ).then((res) => res.json());
-
-    console.log(
-      "The game data was updated successfully",
-      JSON.stringify(response)
     );
-    const completedChallenges = extractCompletedChallenges(response);
+
+    const data = await response.json();
+    console.log("The game data was updated successfully", JSON.stringify(data));
+    const completedChallenges = extractCompletedChallenges(data);
     store.dispatch(setRecentlyCompletedChallenges(completedChallenges));
   } catch (error) {
     console.error(

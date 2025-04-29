@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { SubscriptionData } from "types";
 import SubscriptionCard from "./components/SubscriptionCard";
 import { useSelector } from "react-redux";
+import fetchApi from "utils/api";
 
 export const Subscription = ({ className }: { className: string }) => {
   const { userInfo } = useSelector((state: any) => state.background);
@@ -28,7 +29,7 @@ export const Subscription = ({ className }: { className: string }) => {
   useEffect(() => {
     async function fetchSubscriptionData() {
       try {
-        const response = await fetch(
+        const response = await fetchApi(
           `${process.env.REACT_APP_BACKEND_URL}/subscriptions/get-subscriptions`
         );
         const data = await response.json();

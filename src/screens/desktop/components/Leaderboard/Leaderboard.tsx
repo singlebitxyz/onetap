@@ -7,6 +7,7 @@ import LeaderboardBanner from "./LeaderboardBanner";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchLeaderboardData } from "screens/desktop/stores/desktop";
 import { AppDispatch } from "app/shared/store";
+import fetchApi from "utils/api";
 
 export interface GameData {
   id: number;
@@ -144,19 +145,16 @@ export default function Leaderboard({ className }: { className: string }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // dispatch(fetchLeaderboardData(filter as unknown as string));
         console.log(filter);
         try {
           let jsonData;
           if (filter !== 0) {
-            jsonData = await fetch(
-              `${process.env.REACT_APP_BACKEND_URL}/leaderboard/game-specific/${filter}`,
-              { method: "GET" }
+            jsonData = await fetchApi(
+              `${process.env.REACT_APP_BACKEND_URL}/leaderboard/game-specific/${filter}`
             ).then((res) => res.json());
           } else {
-            jsonData = await fetch(
-              `${process.env.REACT_APP_BACKEND_URL}/leaderboard/all-data`,
-              { method: "GET" }
+            jsonData = await fetchApi(
+              `${process.env.REACT_APP_BACKEND_URL}/leaderboard/all-data`
             ).then((res) => res.json());
           }
           setGameData(jsonData);
