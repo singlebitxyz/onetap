@@ -25,9 +25,11 @@ export default function Header({ className }: { className: string }) {
       <div
         className={`${className} flex mt-7 justify-end items-center text-xl pe-5 h-11`}
       >
+        <a href="https://onetap-two.vercel.app">
         <button className="font-Ranchers p-2 bg-gradient-to-r from-[#AB8E55] to-[#AE780F]">
           Upgrade to Premium
         </button>
+        </a>
         <span className="flex cursor-pointer mx-5">
           <span className="flex items-center">
             <img
