@@ -374,18 +374,23 @@ function CouponCard({
   };
 
   return (
-    <div className="rounded bg-[#222222] w-fit h-[40vh] flex flex-col justify-between">
-      <div className="flex">
-        <div className="p-2">
-          <img className="" src={`/images/${gameMapper(gameId)}.png`} alt="" />
-          <p className="text-2xl font-Impact">{points} Points</p>
-        </div>
+    <div className="rounded-[0.45rem] bg-[#222222] w-[18rem] h-[45vh] flex flex-col justify-between">
+      <div>
+        <img
+          className="rounded-t-[0.45rem]"
+          src={`/images/${gameMapper(gameId)}.png`}
+          alt={name}
+        />
+        <p className="text-xl font-[Impact] m-2 ml-4">{name}</p>
+        <p className="ml-4">🪙{points} Points</p>
       </div>
-      <div className="p-2">
-        <h2>{name}</h2>
+      <div className="p-2 px-4">
         <p>{description}</p>
-        <div>
-          <Button onClick={() => setIsModalOpen(true)} className="w-full">
+        <div className="m-3">
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            className="w-full rounded-[0.45rem] bg-linear-to-r border-solid border-[1px] border-[#9D9D9D] from-[#692CCD] to-[#B87FF6]"
+          >
             Redeem Now
           </Button>
         </div>

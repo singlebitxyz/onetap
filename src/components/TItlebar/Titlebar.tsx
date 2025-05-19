@@ -126,8 +126,8 @@ export const Titlebar = ({ WINDOW_NAME, className }: HeaderProps) => {
         <button
           className="header__icon header__control header__control__close"
           onClick={() => {
-            backgroundWindow?.minimize()();
-            currentWindow.minimize()();
+            backgroundWindow?.close()();
+            currentWindow.close()();
           }}
         >
           <svg>
