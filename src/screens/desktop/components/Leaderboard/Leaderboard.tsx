@@ -57,7 +57,7 @@ const YourScoreBox = () => {
       <div className="flex w-full justify-around flex-row">
         <ScoreBox score={userInfo.globalRanking || 0} scoreText="Your Rank" />
         <ScoreBox score={userInfo.lifetime_earnings || 0} scoreText="Coins" />
-        <ScoreBox score={level} scoreText="Level" />
+        <ScoreBox score={userInfo.level} scoreText="Level" />
       </div>
       <div>
         <div className="flex items-center gap-2 w-80">
@@ -101,22 +101,33 @@ const Record = ({
   coins: number;
 }) => {
   return (
-    <div className="w-full p-4 bg-gradient-to-t from-[#7A43F0] to-[#C38CFF] flex items-center justify-between font-Impact">
-      <h2>{rank}</h2>
-      <div className="flex items-center">
-        <img
-          className={`w-8 ${isFirst ? "" : "invisible"} h-8`}
-          src="/images/leaderboard_trophy.png"
-          alt=""
-        />
-        <h2>{name}</h2>
-      </div>
-      <div className="flex items-center gap-2">
-        <img src="/icons/coin.svg" alt="" />
-        <h2>{coins}</h2>
-      </div>
-      <h2>Level {level}</h2>
-    </div>
+    <>
+      <tr className="w-full h-14 table-auto my-2 bg-gradient-to-t from-[#7A43F0] to-[#C38CFF] font-Impact">
+        <td className="px-4">
+          <h2>{rank}</h2>
+        </td>
+        <td>
+          <div className="flex items-center">
+            <img
+              className={`w-10 ${isFirst ? "" : "invisible"}`}
+              src="/images/leaderboard_trophy.png"
+              alt=""
+            />
+            <h2>{name}</h2>
+          </div>
+        </td>
+        <td>
+          <div className="flex items-center gap-2">
+            <img src="/icons/coin.svg" alt="" />
+            <h2>{coins}</h2>
+          </div>
+        </td>
+        <td>
+          <h2>Level {level}</h2>
+        </td>
+      </tr>
+      <tr className="h-4"></tr>
+    </>
   );
 };
 
@@ -192,19 +203,21 @@ export default function Leaderboard({ className }: { className: string }) {
         <div className="mt-8 flex gap-10 flex-row">
           <div className="rounded-lg w-full">
             <h1 className="text-2xl font-Impact">Ranking</h1>
-            <div className="flex mt-4 py-8 flex-col bg-gradient-to-t gap-4  border-onetapViolet">
-              {gameData &&
-                gameData.map((game: GameData, index: number) => (
-                  <Record
-                    key={game.id}
-                    level={1}
-                    isFirst={index + 1 === 1}
-                    rank={game.rank}
-                    name={game.userName}
-                    coins={game.lifetime_earnings}
-                  />
-                ))}
-            </div>
+            <table className="w-full mt-4 py-8 bg-gradient-to-t gap-4 flex-col border-onetapViolet">
+              <tbody>
+                {gameData &&
+                  gameData.map((game: GameData, index: number) => (
+                    <Record
+                      key={game.id}
+                      level={1}
+                      isFirst={index + 1 === 1}
+                      rank={game.rank}
+                      name={game.userName}
+                      coins={game.lifetime_earnings}
+                    />
+                  ))}
+              </tbody>
+            </table>
           </div>
           {/* <Filter className="w-[48dvw]">
             <GameCard id={"1"} img_src="dota2" className="w-40" />

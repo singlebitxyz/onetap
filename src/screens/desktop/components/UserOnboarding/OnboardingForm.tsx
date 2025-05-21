@@ -97,6 +97,7 @@ const OnBoardingForm = ({handleChangeFunc}:OnBoardingFormProps) => {
           id="username"
           name="username"
           ref={userNameRef}
+          maxLength={30}
           className="w-full p-2 rounded bg-[#1C2B3A] text-white"
           value={formik.values.username}
           onChange={(event)=>handleChange(event)}

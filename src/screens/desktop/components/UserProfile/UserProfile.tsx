@@ -223,6 +223,7 @@ export const MyProfile = memo(({ authId }: { authId: string }) => {
             id="userName"
             name="userName"
             onChange={handleSubmitOnChange} // Submit form on change
+            maxLength={30}
             value={formik.values.userName}
             className="bg-transparent border-[1px] bg-[#302F2F] rounded border-[#BE9FFF] w-full text-white mb-3 p-2 leading-tight focus:outline-none"
             autoComplete="off"
